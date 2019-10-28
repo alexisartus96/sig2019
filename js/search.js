@@ -1,13 +1,21 @@
 require([
-    "esri/Map",
-    "esri/views/MapView",
     "esri/widgets/Search"
-  ], function(Map, MapView, Search) {
-      // Search widget
-      var search = new Search({
-        view: view
-      });
+    ], 
+    function(Search) {
 
-      view.ui.add(search, "top-right");
-    
+      searchPopup.content = "<div class='searchPopup'><h4>Añadir punto</h4><button type='button' value='Agregar parada' class='w3-button w3-xlarge w3-circle w3-red w3-card-4' onclick='addStop(mapPoint); view.popup.close()'>+</button></div>"
+
+      var search = new Search({
+        container: "search",
+        popupEnabled: true,
+        view: view,
+        resultGraphicEnabled: true
+      }, "search");
+
+      search.popupTemplate = searchPopup;
+
+      search.on("select-result", function(event) {
+        resultName = event.result.name;
+        mapPoint = event.result.feature.geometry;
+      })
 })
