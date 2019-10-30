@@ -1,52 +1,22 @@
 require([
-    "esri/PopupTemplate",
+    "esri/Graphic",
     "esri/tasks/RouteTask",
     "esri/tasks/support/RouteParameters",
-    "esri/tasks/support/FeatureSet",
-    "esri/Graphic"
-  ], function() {
-    /*var routeTask = new RouteTask({
-      url: "https://utility.arcgis.com/usrsvcs/appservices/Hr0YwNsk3KRTTywS/rest/services/World/Route/NAServer/Route_World/solve"
-   });
+    "esri/tasks/support/FeatureSet"
+  ], function(Graphic) {
 
-    view.on("click", function(event){
-     addGraphic("start", event.mapPoint);
-      if (view.graphics.length === 5) {
-      getRoute();
+      addStop = function(mapPoint) {
+        const stopPoint = new Graphic(mapPoint, pointSymbol);
+        view.graphics.add(stopPoint);
       }
-    });
 
-  function addGraphic(type, point) {
-    var graphic = new Graphic({
-      symbol: {
-        type: "simple-marker",
-        color: (type === "start") ? "white" : "black",
-        size: "8px"
-      },
-      geometry: point
-    });
-    view.graphics.add(graphic);
-  }
-
-  function getRoute() {
-    // Setup the route parameters
-    var routeParams = new RouteParameters({
-      stops: new FeatureSet({
-        features: view.graphics.toArray() // Pass the array of graphics
-      }),
-      returnDirections: true
-    });
-    // Get the route
-    routeTask.solve(routeParams).then(function(data) {
-      // Display the route
-      data.routeResults.forEach(function(result) {
-        result.route.symbol = {
-          type: "simple-line",
-          color: [5, 150, 255],
-          width: 3
-        };
-        view.graphics.add(result.route);
+      view.on("click", function(event) {
+        event.stopPropagation();
+        mapPoint = event.mapPoint;
+        view.popup.open({
+          title: "Posición seleccionada",
+          location: mapPoint,
+          content: "<div class='searchPopup'><h4>Añadir punto</h4><button type='button' value='Agregar parada' class='w3-button w3-xlarge w3-circle w3-red w3-card-4' onclick='addStop(mapPoint); view.popup.close()'>+</button></div>"
+        });
       });
-    });
-  }*/
 });

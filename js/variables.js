@@ -1,4 +1,8 @@
+// Map
 var map, view, searchPopup;
+
+// Symbols 
+var pointSymbol, routeSymbol, bufferSymbol;
 
 
 require([

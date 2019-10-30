@@ -12,19 +12,22 @@ html, body, #viewDiv {
     box-sizing: border-box;
     position: absolute;
     z-index: 1;
-    height: calc(90vh); /* all vertical height minus header */
     background: white;
     
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     
-    width: 290px;
+    left: 15px;
+    top: 15px;
+    width: 300px;
+    height: calc(90vh);
     box-shadow: 1px 1px 10px 1px #888888;
 }
 
 #search {
     width: 100%;
+    box-shadow: 0px 1px 0px 0px #dbdbdb;
 }
 
 .searchPopup {
@@ -32,4 +35,5 @@ html, body, #viewDiv {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: 100px;
 }
