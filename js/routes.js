@@ -20,16 +20,12 @@ require([
             // Get the route
             routeTask.solve(routeParams).then(function(data) {
               // Display the route
-              data.routeResults.forEach(function(result) {
-                result.route.symbol = {
-                  type: "simple-line",
-                  color: [5, 150, 255],
-                  width: 3
-                };
-                view.graphics.add(result.route);
-              });
+              currentRoute = data.routeResults[0].route;
+              currentRoute.symbol = routeSymbol;
+              view.graphics.add(currentRoute);
             });
-          }
-        )
+          });
+       
+        
 	}
 )

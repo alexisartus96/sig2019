@@ -7,6 +7,7 @@
     <link href="css/main.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
     <script src="https://js.arcgis.com/4.11/"></script> 
     <script src="js/variables.js"></script> 
     <title>Sig 2019</title>
@@ -14,7 +15,14 @@
   <body>
     <div class="floating-box">
       <div id="search"></div>
-      <button id="generate-route" class="w3-button w3-blue">Generar Ruta</button>
+      <div class="options-box">
+        <button id="generate-route" class="w3-button w3-blue"><i class="fas fa-route"></i>Generar Ruta</button>
+        <button id="save-route" class="w3-button w3-blue">Guardar Ruta</button>
+        <button id="get-saved-route" class="w3-button w3-blue">Cargar Rutas</button>
+      </div>
+      <div class="saved-routes">
+        <h4>Seleccione una ruta</h4>
+      </div>
     </div>
 
     <div id="viewDiv"></div>  
@@ -22,5 +30,6 @@
     <script src="js/symbols.js"></script> 
     <script src="js/search.js"></script> 
     <script src="js/routes.js"></script> 
+    <script src="js/layers.js"></script> 
   </body>
 </html>

@@ -4,6 +4,9 @@ var map, view, searchPopup;
 // Symbols 
 var pointSymbol, routeSymbol, bufferSymbol;
 
+// Routes
+var routes, currentRoute;
+
 
 require([
     "esri/Map",

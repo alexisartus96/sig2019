@@ -20,7 +20,7 @@ html, body, #viewDiv {
     
     left: 15px;
     top: 15px;
-    width: 300px;
+    width: 500px;
     height: calc(90vh);
     box-shadow: 1px 1px 10px 1px #888888;
 }
@@ -36,4 +36,32 @@ html, body, #viewDiv {
     justify-content: center;
     align-items: center;
     min-height: 100px;
+}
+
+.options-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    margin-top: 50px;
+}
+
+.options-box button {
+    font-size: 12px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+i {
+    font-size: 16px;
+    margin-right: 6px;
+}
+
+.saved-routes {
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
