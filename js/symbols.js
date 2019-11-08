@@ -31,5 +31,11 @@ require([
 			),
 			new dojo.Color([80,120,255,0.35])
 		);
+
+		regularCarSymbol = new SimpleMarkerSymbol({
+			style: 'diamond',
+			size: 20,
+			color: [255, 0, 255, 0.5]
+		});
 	}
 )

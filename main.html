@@ -17,12 +17,22 @@
       <div id="search"></div>
       <div class="options-box">
         <button id="generate-route" class="w3-button w3-blue"><i class="fas fa-route"></i>Generar Ruta</button>
-        <button id="save-route" class="w3-button w3-blue">Guardar Ruta</button>
-        <button id="get-saved-route" class="w3-button w3-blue">Cargar Rutas</button>
+        <button id="save-route" class="w3-button w3-blue"><i class="fas fa-save"></i>Guardar Ruta</button>
+        <button id="get-saved-route" class="w3-button w3-blue"><i class="fas fa-upload"></i>Cargar Rutas</button>
+      </div>
+      <div class="map-points">
+        <h4>Puntos a visitar</h4>
       </div>
       <div class="saved-routes">
-        <h4>Seleccione una ruta</h4>
+        <h4><i class="far fa-hand-pointer"></i>Seleccione una ruta</h4>
       </div>
+      <div class="options-box simulation-hide">
+        <button id="start" class="w3-button w3-blue"><i class="fab fa-bandcamp"></i>Simular</button>
+        <button id="play" class="w3-button w3-blue"><i class="fas fa-play"></i>Seguir</button>
+        <button id="pause" class="w3-button w3-blue"><i class="fas fa-pause"></i>Pausar</button>
+        <button id="stop" class="w3-button w3-blue"><i class="fas fa-stop"></i>Parar</button>
+      </div>
+      <button id="export-pdf" class="w3-button w3-blue"><i class="far fa-file-pdf"></i>Exportar a pdf</button>
     </div>
 
     <div id="viewDiv"></div>  
@@ -31,5 +41,7 @@
     <script src="js/search.js"></script> 
     <script src="js/routes.js"></script> 
     <script src="js/layers.js"></script> 
+    <script src="js/simulation.js"></script> 
+    <script src="js/exportPdf.js"></script>
   </body>
 </html>

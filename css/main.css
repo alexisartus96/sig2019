@@ -55,13 +55,42 @@ html, body, #viewDiv {
 }
 
 i {
-    font-size: 16px;
+    font-size: 14px;
     margin-right: 6px;
 }
 
 .saved-routes {
     display: none;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
+    background-color: antiquewhite;
+    width: 90%;
+}
+
+.saved-routes a {
+    width: 80%;
+    margin: 7px;
+    background: coral;
+    cursor: pointer;
+}
+
+.simulation-hide {
+    display: none;
+}
+
+#export-pdf {
+    position: absolute;
+    bottom: 20px;
+}
+
+.map-points {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pointer {
+    cursor: pointer;
 }

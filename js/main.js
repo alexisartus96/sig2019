@@ -4,10 +4,44 @@ require([
     "esri/tasks/support/RouteParameters",
     "esri/tasks/support/FeatureSet"
   ], function(Graphic) {
+      pointIndex = 0;
+      pointArray = [];
 
       addStop = function(mapPoint) {
         const stopPoint = new Graphic(mapPoint, pointSymbol);
         view.graphics.add(stopPoint);
+        $('.map-points').css('display','flex');
+        pointArray[pointIndex] = mapPoint;
+        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i></a>');
+        pointIndex++;
+      }
+
+      moveUp = function(id) {
+        if (id !== 0) {
+          var pointAux = pointArray[id-1];
+          pointArray[id-1] = pointArray[id];
+          pointArray[id] = pointAux;
+          $('.map-points a').remove();
+          var indexP = 0;
+          pointArray.map(function(mapPoint) {
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i></a>');
+            indexP++;
+          });
+        }
+      }
+
+      moveDown = function(id) {
+        if (id !== (pointArray.length - 1)) {
+          var pointAux = pointArray[id+1];
+          pointArray[id+1] = pointArray[id];
+          pointArray[id] = pointAux;
+          $('.map-points a').remove();
+          var indexP = 0;
+          pointArray.map(function(mapPoint) {
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i></a>');
+            indexP++;
+          });
+        }
       }
 
       view.on("click", function(event) {
@@ -47,22 +81,27 @@ require([
                 var queryId = routes.createQuery();
                 queryId.where = "objectid = " + routy.toString();
                 routes.queryFeatures(queryId).then(function(route) {
-                  var shownRoute = route.features[0];
-                  shownRoute.symbol = routeSymbol;
                   let routeName = route.features[0].attributes.notes;
                   let id = route.features[0].attributes.objectid;
-                  $('.saved-routes').append('<a id="'+id+'" onclick="showRoute()">'+routeName+'</a>')
+                  $('.saved-routes').append('<a id="'+id+'" onclick="showRoute(id)"><i class="fas fa-road"></i>'+routeName+'</a>')
                 })
               })();
             }
           });
       });
 
-      showRoute = function() {  
-        routes.queryFeatures($(this).attr("id")).then(function(route) {
+      showRoute = function(id) { 
+        var queryId = routes.createQuery(); 
+        queryId.where = "objectid = " + id;
+        routes.queryFeatures(queryId).then(function(route) {
           var shownRoute = route.features[0];
           shownRoute.symbol = routeSymbol;
+          currentRoute = shownRoute;
           view.graphics.add(shownRoute);
-        })
+        });
+        $('.options-box').css('display','none');
+        $('.saved-routes').css('display','none');
+        $('.saved-routes a').remove();
+        $('.simulation-hide').css('display','flex');
       };
 });

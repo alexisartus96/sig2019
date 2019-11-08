@@ -2,11 +2,18 @@
 var map, view, searchPopup;
 
 // Symbols 
-var pointSymbol, routeSymbol, bufferSymbol;
+var pointSymbol, routeSymbol, bufferSymbol, regularCarSymbol;
 
 // Routes
-var routes, currentRoute;
+var pointIndex, pointArray, routes, currentRoute;
 
+// Speed
+const initialSpeed = 100;
+const sleepTime =  1000;
+var speed = initialSpeed;
+
+// Counties
+var counties, countiesLayer;
 
 require([
     "esri/Map",
