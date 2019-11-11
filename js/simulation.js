@@ -1,7 +1,10 @@
 require([
 	"esri/geometry/Point",
-	"esri/Graphic"], 
-   function(Point, Graphic) {
+	"esri/Graphic",
+	"esri/tasks/support/BufferParameters",
+	"esri/tasks/GeometryService",
+    "esri/geometry/Circle"], 
+   function(Point, Graphic, BufferParameters, GeometryService, Circle) {
 	   
     $('#start').on('click', async function() {
 		$('#start').unbind("click");
@@ -12,6 +15,14 @@ require([
 		speed = initialSpeed;
 		while (!endRoute) {
 			car = new Point(currentRoute.geometry.paths[indexPath][index][0], currentRoute.geometry.paths[indexPath][index][1]);
+			
+			bufferParams = new BufferParameters();
+			bufferParams.geometries = [car];
+			bufferParams.distances = [ 50 ];
+			bufferParams.unit = GeometryService.UNIT_KILOMETER;
+			bufferParams.outSpatialReference = view.spatialReference;
+			geometryService.buffer(bufferParams).then(showBuffer);
+			
 			carGraphic = new Graphic(car, carSymbol);
 			view.graphics.add(carGraphic)
 			await sleep(sleepTime);
@@ -25,6 +36,76 @@ require([
 			}
 		}
 	})
+
+	circle = new Circle();
+	circle.spatialReference = map.spatialReference;
+
+    geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+      
+	showBuffer = function (geometries) {
+        getCounties();
+  
+        view.graphics.remove(graphicBuffer);
+        graphicBuffer = new Graphic(geometries[0],bufferSymbol);
+        view.graphics.add(graphicBuffer);
+  
+        view.graphics.remove(carGraphic);
+        carGraphic = new Graphic(car, carSymbol);
+        view.graphics.add(carGraphic);
+        
+        circle = geometries[0];
+      }
+  
+    getCounties = function() {
+        var query = counties.createQuery();
+        query.geometry = circle;
+        query.returnGeometry = true;
+        query.outfields = ["*"];
+  
+        counties.queryFeatures(query).then(function(featureSet) {
+          var inBuffer = [];
+          var areas = [];
+          var feat = featureSet.features;
+          var circleArea;
+          var countiesGeometry = [];
+          countiesLayer.removeAll();
+          for (var i = 0; i < feat.length; i++) {
+            countiesGeometry.push(feat[i].geometry);
+            inBuffer.push(feat[i].attributes.OBJECTID);
+            
+            graphicCounties = new Graphic(feat[i].geometry,countySymbol);
+            countiesLayer.add(graphicCounties);					
+          }
+          var areasAndLengthParamsCircle = new AreasAndLengthsParameters({
+            areaUnit: "square-kilometers",
+            lengthUnit: "kilometers",
+            polygons: [circle]
+          });
+          geometryService.areasAndLengths(areasAndLengthParamsCircle).then(function(results) {
+            circleArea = results.areas[0];
+          });
+          geometryService.intersect(countiesGeometry,circle).then(function(intersectionGeometry) {
+            var areasAndLengthParams = new AreasAndLengthsParameters({
+              areaUnit: "square-kilometers",
+              lengthUnit: "kilometers",
+              polygons: intersectionGeometry
+            });
+            geometryService.areasAndLengths(areasAndLengthParams).then(function(results) {
+              areas=results.areas;
+              var populationValue = calculatePopulation(feat,circleArea,areas);
+              view.popup.close();
+              if (!canceled) {
+                view.popup.open({
+                  location: car,
+                  title: "VALOR DE POBLACIÓN PONDERADO",
+                  alignment: "top-center",
+                  content: "<b>Total de población en el buffer:</b> " + populationValue.toLocaleString() + " habitantes"
+                });
+              }
+            });
+          });
+        });
+      }
 
 		/*pauseSimulation = function() {
 			pause = true;

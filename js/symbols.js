@@ -37,5 +37,14 @@ require([
 			size: 20,
 			color: [255, 0, 255, 0.5]
 		});
+
+		countySymbol = new SimpleFillSymbol(
+			SimpleFillSymbol.STYLE_SOLID,
+			new SimpleLineSymbol(
+				SimpleLineSymbol.STYLE_SOLID,
+				new dojo.Color([80,120,100,0.65]), 2
+			),
+			new dojo.Color([80,120,100,0.35])
+		);
 	}
 )

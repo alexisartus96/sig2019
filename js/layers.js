@@ -13,7 +13,5 @@ require([
 			outFields: ["*"],
 			opacity: 0.7,
 		});
-	}
-
-	
+	}	
 )
