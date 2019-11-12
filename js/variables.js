@@ -12,6 +12,9 @@ const initialSpeed = 30;
 const sleepTime =  4000;
 var speed = initialSpeed;
 
+// Simulation
+var pause, canceled;
+
 // Counties
 var counties, countiesLayer, circle;
 
@@ -37,7 +40,7 @@ require([
         container: "viewDiv",
         map: map,
         center: [-94.62681999999995, 39.11352000000004], // longitude, latitude
-        zoom: 4
+        zoom: 9
         });
 
         searchPopup = new PopupTemplate();

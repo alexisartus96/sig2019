@@ -11,8 +11,8 @@ require([
         const stopPoint = new Graphic(mapPoint, pointSymbol);
         view.graphics.add(stopPoint);
         $('.map-points').css('display','flex');
-        pointArray[pointIndex] = mapPoint;
-        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i></a>');
+        pointArray[pointIndex] = stopPoint;
+        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' , '+mapPoint.longitude+' '+'<i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+pointIndex+')" class="fas fa-times"></i></a>');
         pointIndex++;
       }
 
@@ -24,7 +24,7 @@ require([
           $('.map-points a').remove();
           var indexP = 0;
           pointArray.map(function(mapPoint) {
-            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i></a>');
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
             indexP++;
           });
         }
@@ -38,10 +38,21 @@ require([
           $('.map-points a').remove();
           var indexP = 0;
           pointArray.map(function(mapPoint) {
-            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' '+mapPoint.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i></a>');
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
             indexP++;
           });
         }
+      }
+
+      deletePoint = function(id) {
+        view.graphics.remove(pointArray[id]);
+        pointArray.splice(id,1);
+        $('.map-points a').remove();
+        var indexP = 0;
+        pointArray.map(function(mapPoint) {
+          $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
+          indexP++;
+        });
       }
 
       view.on("click", function(event) {

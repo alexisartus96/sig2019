@@ -3,58 +3,71 @@ require([
 	"esri/Graphic",
 	"esri/tasks/support/BufferParameters",
 	"esri/tasks/GeometryService",
-    "esri/geometry/Circle"], 
-   function(Point, Graphic, BufferParameters, GeometryService, Circle) {
+  	"esri/geometry/Circle",
+    	"esri/tasks/support/AreasAndLengthsParameters"], 
+   function(Point, Graphic, BufferParameters, GeometryService, Circle, AreasAndLengthsParameters) {
 	   
-    $('#start').on('click', async function() {
-		$('#start').unbind("click");
+
+	$('#start').on('click',  simulate = async function() {
+		$('#start').unbind('click');
+		pause = false;
+		canceled = false;
 		var index = 0;
 		var indexPath = 0;
 		var endRoute = false;
 		carSymbol = regularCarSymbol;
 		speed = initialSpeed;
-		while (!endRoute) {
-			car = new Point(currentRoute.geometry.paths[indexPath][index][0], currentRoute.geometry.paths[indexPath][index][1]);
-			
-			bufferParams = new BufferParameters();
-			bufferParams.geometries = [car];
-			bufferParams.distances = [ 50 ];
-			bufferParams.unit = GeometryService.UNIT_KILOMETER;
-			bufferParams.outSpatialReference = view.spatialReference;
-			geometryService.buffer(bufferParams).then(showBuffer);
-			
-			carGraphic = new Graphic(car, carSymbol);
-			view.graphics.add(carGraphic)
-			await sleep(sleepTime);
-			view.graphics.remove(carGraphic);
-			index = index + speed;
-			if(index >= currentRoute.geometry.paths[indexPath].length) {
-				indexPath++;
-				index = 0;
-				if (indexPath >= currentRoute.geometry.paths.length)
-					endRoute = true;
+		while (!endRoute && !canceled) {
+			if (!pause) {
+				car = new Point(currentRoute.geometry.paths[indexPath][index][0], currentRoute.geometry.paths[indexPath][index][1]);
+				
+				bufferParams = new BufferParameters();
+				bufferParams.geometries = [car];
+				bufferParams.distances = [ 50 ];
+				bufferParams.unit = GeometryService.UNIT_KILOMETER;
+				bufferParams.outSpatialReference = view.spatialReference;
+				geometryService.buffer(bufferParams).then(showBuffer);
+				carGraphic = new Graphic(car, carSymbol);
+				view.graphics.add(carGraphic)
+				await sleep(sleepTime);
+				view.graphics.remove(carGraphic);
+				index = index + speed;
+				if(index >= currentRoute.geometry.paths[indexPath].length) {
+					indexPath++;
+					index = 0;
+					if (indexPath >= currentRoute.geometry.paths.length)
+						endRoute = true;
+				}
+			} else {
+				await sleep(sleepTime);
 			}
 		}
-	})
-
+		$('.options-box').css('display','flex');
+		$('.simulation-hide').css('display','none');
+		await sleep(sleepTime);
+		view.popup.close();
+		view.graphics.remove(graphicBuffer);
+		view.graphics.removeAll();
+    	});
+ 
 	circle = new Circle();
 	circle.spatialReference = map.spatialReference;
 
-    geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+    	geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
       
 	showBuffer = function (geometries) {
-        getCounties();
-  
-        view.graphics.remove(graphicBuffer);
-        graphicBuffer = new Graphic(geometries[0],bufferSymbol);
-        view.graphics.add(graphicBuffer);
-  
-        view.graphics.remove(carGraphic);
-        carGraphic = new Graphic(car, carSymbol);
-        view.graphics.add(carGraphic);
-        
-        circle = geometries[0];
-      }
+		getCounties();
+	
+		view.graphics.remove(graphicBuffer);
+		graphicBuffer = new Graphic(geometries[0],bufferSymbol);
+		view.graphics.add(graphicBuffer);
+	
+		view.graphics.remove(carGraphic);
+		carGraphic = new Graphic(car, carSymbol);
+		view.graphics.add(carGraphic);
+		
+		circle = geometries[0];
+     	}
   
     getCounties = function() {
         var query = counties.createQuery();
@@ -94,26 +107,43 @@ require([
               areas=results.areas;
               var populationValue = calculatePopulation(feat,circleArea,areas);
               view.popup.close();
-              if (!canceled) {
                 view.popup.open({
                   location: car,
                   title: "VALOR DE POBLACIÓN PONDERADO",
                   alignment: "top-center",
                   content: "<b>Total de población en el buffer:</b> " + populationValue.toLocaleString() + " habitantes"
                 });
-              }
             });
           });
         });
       }
 
-		/*pauseSimulation = function() {
-			pause = true;
-			document.getElementById("pause").disabled = true;
-			document.getElementById("play").disabled = false;
-			updateCarSymbol();
-		}
+      calculatePopulation = function(features,circleArea,areas) {
+	var popTotal = 0;
+	for (var x = 0; x < features.length; x++) {
+		mult = areas[x] * 100;
+		percentage = mult / circleArea;
+		fraction = areas[x] / circleArea;
+		popCounty = features[x].attributes["TOTPOP_CY"] * fraction;
+		popTotal = popTotal + popCounty;
+	}
+	popTotal = Math.trunc(popTotal);
+	return popTotal;
+	}
 
+	$('#pause').on('click', function() {
+		pause = true;
+	});
+
+	$('#play').on('click', function() {
+		pause = false;
+	});
+
+	$('#stop').on('click', function() {
+		pause = true;
+		canceled = true;
+	});
+/*
 		play = function() {
 			pause = false;
 			document.getElementById("pause").disabled = false;

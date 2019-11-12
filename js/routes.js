@@ -12,16 +12,11 @@ require([
         $('#generate-route').on('click', function (event) {
             event.stopPropagation();
             // Setup the route parameters
-            var realPoints = [];
-            var indexP = 0;
-            pointArray.map(function(point){
-              realPoints[indexP] = new Graphic(point, pointSymbol);
-              indexP++;
-            });
+            view.graphics.remove(currentRoute);
 
             var routeParams = new RouteParameters({
               stops: new FeatureSet({
-                features: realPoints // Pass the array of graphics
+                features: pointArray // Pass the array of graphics
               }),
               returnDirections: true
             });
