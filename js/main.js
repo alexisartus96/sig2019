@@ -154,7 +154,6 @@ require([
               queryId.where = "objectid = " + point;
               points.queryFeatures(queryId).then(function(actualPoint) {
                 let pointName = actualPoint.features[0].attributes.description;
-                let id = actualPoint.features[0].attributes.objectid;
                 $('.saved-routes').append('<a id="'+point+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
               })
             })();
