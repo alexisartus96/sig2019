@@ -80,6 +80,13 @@ i {
 #export-pdf {
     position: absolute;
     bottom: 20px;
+    right: 310px;
+}
+
+#clean-map {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
 }
 
 .map-points {
@@ -134,3 +141,11 @@ i {
     justify-content: center;
     align-items: center;
 }
+
+.options-box .not-active {
+    pointer-events: none;
+    cursor: default;
+    text-decoration: none;
+    color: black;
+    background-color: rgb(33, 85, 35) !important;
+  }

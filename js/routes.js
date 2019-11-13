@@ -27,6 +27,8 @@ require([
               currentRoute.symbol = routeSymbol;
               view.graphics.add(currentRoute);
             });
+            $('#simulate').removeClass('not-active');
+            $('#save-route').removeClass('not-active');
           });
        
         
