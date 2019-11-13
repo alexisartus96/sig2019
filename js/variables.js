@@ -2,21 +2,23 @@
 var map, view, searchPopup;
 
 // Symbols 
-var pointSymbol, routeSymbol, bufferSymbol, regularCarSymbol, countySymbol;
+var pointSymbol, routeSymbol, bufferSymbol, regularCarSymbol, countySymbol, slowRouteSymbol, regularRouteSymbol, fastRouteSymbol, changeState;
 
 // Routes
 var pointIndex, pointArray, routes, currentRoute;
 
 // Speed
-const initialSpeed = 30;
-const sleepTime =  4000;
+const initialSpeed = 10;
+const sleepTime =  3000;
 var speed = initialSpeed;
 
 // Simulation
 var pause, canceled;
+var bufferDistance = 10;
 
 // Counties
 var counties, countiesLayer, circle;
+var actualState = ''
 
 var graphicBuffer, carGraphic, bufferParams;
 

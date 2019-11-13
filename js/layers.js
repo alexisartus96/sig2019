@@ -13,5 +13,10 @@ require([
 			outFields: ["*"],
 			opacity: 0.7,
 		});
+		
+		points = new FeatureLayer("http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0", {
+			mode: FeatureLayer.MODE_ONDEMAND,
+			outFields: ["*"]
+		})
 	}	
 )

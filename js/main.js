@@ -2,8 +2,9 @@ require([
     "esri/Graphic",
     "esri/tasks/RouteTask",
     "esri/tasks/support/RouteParameters",
-    "esri/tasks/support/FeatureSet"
-  ], function(Graphic) {
+    "esri/tasks/support/FeatureSet",
+    "esri/geometry/Point"
+  ], function(Graphic, Point) {
       pointIndex = 0;
       pointArray = [];
 
@@ -12,7 +13,7 @@ require([
         view.graphics.add(stopPoint);
         $('.map-points').css('display','flex');
         pointArray[pointIndex] = stopPoint;
-        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.latitude+' , '+mapPoint.longitude+' '+'<i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+pointIndex+')" class="fas fa-times"></i></a>');
+        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+pointIndex +'- '+mapPoint.latitude+' , '+mapPoint.longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+pointIndex+')" class="fas fa-times"></i></div></a>');
         pointIndex++;
       }
 
@@ -24,7 +25,7 @@ require([
           $('.map-points a').remove();
           var indexP = 0;
           pointArray.map(function(mapPoint) {
-            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+indexP +'- '+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></div></a>');
             indexP++;
           });
         }
@@ -38,7 +39,7 @@ require([
           $('.map-points a').remove();
           var indexP = 0;
           pointArray.map(function(mapPoint) {
-            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
+            $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+indexP +'- '+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></div></a>');
             indexP++;
           });
         }
@@ -50,7 +51,7 @@ require([
         $('.map-points a').remove();
         var indexP = 0;
         pointArray.map(function(mapPoint) {
-          $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></a>');
+          $('.map-points').append('<a id="'+indexP+'"><i class="fas fa-map-marker-alt"></i>'+indexP +'- '+mapPoint.geometry.latitude+' '+mapPoint.geometry.longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+indexP+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+indexP+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+indexP+')" class="fas fa-times"></i></div></a>');
           indexP++;
         });
       }
@@ -101,6 +102,48 @@ require([
           });
       });
 
+      $('#save-point').on('click', function() {
+        var pointName = prompt("Ingrese el nombre para los puntos");
+        var index = 1;
+        if (pointArray != null && pointArray.length > 0) {
+          pointArray.map(function(actualPoint){
+            var newPoint = new Graphic({
+              geometry: new Point(actualPoint),
+              symbol: pointSymbol,
+            });
+            newPoint.attributes = {
+              "notes" : 'sig2019-gr05' + pointName+index
+            };
+            points.applyEdits({
+              addFeatures: [newPoint]
+            }).then(function (res) {
+            });
+            index++;
+          })
+        }
+    })
+
+    $('#get-saved-point').on('click', function() {
+        var query = points.createQuery();
+        query.where = "notes LIKE 'sig2019-gr05%'";
+        query.outFields = [ "objectid" ];
+        $('.saved-routes').css('display','flex');
+        points.queryFeatures(query).then(function(objectIds) {
+          for (index = 0; index < objectIds.features.length; index++) {
+            (function() {
+              var point = objectIds.features[index].attributes.objectid;
+              var queryId = points.createQuery();
+              queryId.where = "objectid = " + point.toString();
+              points.queryFeatures(queryId).then(function(actualPoint) {
+                let pointName = actualPoint.features[0].attributes.notes;
+                let id = actualPoint.features[0].attributes.objectid;
+                $('.saved-routes').append('<a id="'+id+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
+              })
+            })();
+          }
+        });
+    });
+
       showRoute = function(id) { 
         var queryId = routes.createQuery(); 
         queryId.where = "objectid = " + id;
@@ -110,9 +153,25 @@ require([
           currentRoute = shownRoute;
           view.graphics.add(shownRoute);
         });
+      };
+
+      showPoint = function(id) { 
+        var queryId = points.createQuery(); 
+        queryId.where = "objectid = " + id;
+        points.queryFeatures(queryId).then(function(actualPoint) {
+          var shownPoint = actualPoint.features[0];
+          shownPoint.symbol = pointSymbol;
+          view.graphics.add(shownPoint);
+        });
+      };
+
+      $('#simulate').on('click', function(){
         $('.options-box').css('display','none');
         $('.saved-routes').css('display','none');
         $('.saved-routes a').remove();
-        $('.simulation-hide').css('display','flex');
-      };
+        $('.map-points').css('display', 'none');
+        $('.simulation-hide').css('display','flex'); 
+        $('#moreSpeed').after('<p>'+initialSpeed+'</p>');
+        $('#moreRadio').after('<p>'+bufferDistance+'</p>');
+      });
 });

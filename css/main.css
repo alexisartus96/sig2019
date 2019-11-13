@@ -64,14 +64,13 @@ i {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: antiquewhite;
     width: 90%;
 }
 
 .saved-routes a {
     width: 80%;
     margin: 7px;
-    background: coral;
+    background: #50c7ff52;
     cursor: pointer;
 }
 
@@ -91,6 +90,48 @@ i {
     align-items: center;
 }
 
+.map-points a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 14px;
+}
+
+.control-arrows {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 5px;
+}
+
+.control-arrows i {
+    border: 2px solid #4CAF50;
+    border-radius: 7px;
+    padding: 5px;
+}
+
 .pointer {
     cursor: pointer;
+}
+
+.population {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.speedControl {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.radioControl {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

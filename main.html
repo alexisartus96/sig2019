@@ -16,9 +16,12 @@
     <div class="floating-box">
       <div id="search"></div>
       <div class="options-box">
-        <button id="generate-route" class="w3-button w3-blue"><i class="fas fa-route"></i>Generar Ruta</button>
-        <button id="save-route" class="w3-button w3-blue"><i class="fas fa-save"></i>Guardar Ruta</button>
-        <button id="get-saved-route" class="w3-button w3-blue"><i class="fas fa-upload"></i>Cargar Rutas</button>
+        <button id="generate-route" class="w3-button w3-green"><i class="fas fa-route"></i>Generar Ruta</button>
+        <button id="save-route" class="w3-button w3-green"><i class="fas fa-save"></i>Guardar Ruta</button>
+        <button id="get-saved-route" class="w3-button w3-green"><i class="fas fa-upload"></i>Cargar Rutas</button>
+        <button id="save-point" class="w3-button w3-green"><i class="fas fa-save"></i>Guardar Puntos</button>
+        <button id="get-saved-point" class="w3-button w3-green"><i class="fas fa-upload"></i>Cargar Puntos</button>
+        <button id="simulate" class="w3-button w3-green"><i class="fab fa-bandcamp"></i>Simulador</button>
       </div>
       <div class="map-points">
         <h4>Puntos a visitar</h4>
@@ -27,12 +30,23 @@
         <h4><i class="far fa-hand-pointer"></i>Seleccione una ruta</h4>
       </div>
       <div class="options-box simulation-hide">
-        <button id="start" class="w3-button w3-blue"><i class="fab fa-bandcamp"></i>Simular</button>
-        <button id="play" class="w3-button w3-blue"><i class="fas fa-play"></i>Seguir</button>
-        <button id="pause" class="w3-button w3-blue"><i class="fas fa-pause"></i>Pausar</button>
-        <button id="stop" class="w3-button w3-blue"><i class="fas fa-stop"></i>Parar</button>
+        <button id="start" class="w3-button w3-green"><i class="fab fa-bandcamp"></i>Simular</button>
+        <button id="play" class="w3-button w3-green"><i class="fas fa-play"></i>Seguir</button>
+        <button id="pause" class="w3-button w3-green"><i class="fas fa-pause"></i>Pausar</button>
+        <button id="stop" class="w3-button w3-green"><i class="fas fa-stop"></i>Parar</button>
+        <div class="speedControl">
+          <button id="moreSpeed" class="w3-button w3-green">+</button>
+          <button id="lessSpeed" class="w3-button w3-green">-</button>
+        </div>
+        <div class="radioControl">
+            <button id="moreRadio" class="w3-button w3-green">+</button>
+            <button id="lessRadio" class="w3-button w3-green">-</button>
+          </div>
       </div>
-      <button id="export-pdf" class="w3-button w3-blue"><i class="far fa-file-pdf"></i>Exportar a pdf</button>
+      <div class="population">
+        <h4>Poblacion</h4>
+      </div>
+      <button id="export-pdf" class="w3-button w3-green"><i class="far fa-file-pdf"></i>Exportar a pdf</button>
     </div>
 
     <div id="viewDiv"></div>  

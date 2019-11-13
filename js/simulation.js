@@ -4,33 +4,42 @@ require([
 	"esri/tasks/support/BufferParameters",
 	"esri/tasks/GeometryService",
   	"esri/geometry/Circle",
-    	"esri/tasks/support/AreasAndLengthsParameters"], 
-   function(Point, Graphic, BufferParameters, GeometryService, Circle, AreasAndLengthsParameters) {
+	"esri/tasks/support/AreasAndLengthsParameters",
+	"esri/symbols/SimpleFillSymbol"], 
+   function(Point, Graphic, BufferParameters, GeometryService, Circle, AreasAndLengthsParameters, SimpleFillSymbol) {
 	   
 
 	$('#start').on('click',  simulate = async function() {
 		$('#start').unbind('click');
+		$(".population").css('display','flex');
 		pause = false;
 		canceled = false;
 		var index = 0;
 		var indexPath = 0;
 		var endRoute = false;
-		carSymbol = regularCarSymbol;
+		carSymbol = slowCarSymbol;
 		speed = initialSpeed;
 		while (!endRoute && !canceled) {
 			if (!pause) {
+				view.graphics.remove(carGraphic);
 				car = new Point(currentRoute.geometry.paths[indexPath][index][0], currentRoute.geometry.paths[indexPath][index][1]);
 				
+				checkState(indexPath, index);
+
 				bufferParams = new BufferParameters();
 				bufferParams.geometries = [car];
-				bufferParams.distances = [ 50 ];
+				bufferParams.distances = [ bufferDistance ];
 				bufferParams.unit = GeometryService.UNIT_KILOMETER;
 				bufferParams.outSpatialReference = view.spatialReference;
 				geometryService.buffer(bufferParams).then(showBuffer);
+
 				carGraphic = new Graphic(car, carSymbol);
-				view.graphics.add(carGraphic)
+				view.graphics.add(carGraphic);
+
 				await sleep(sleepTime);
-				view.graphics.remove(carGraphic);
+
+				addSpeedLine(indexPath, index);
+
 				index = index + speed;
 				if(index >= currentRoute.geometry.paths[indexPath].length) {
 					indexPath++;
@@ -45,7 +54,8 @@ require([
 		$('.options-box').css('display','flex');
 		$('.simulation-hide').css('display','none');
 		await sleep(sleepTime);
-		view.popup.close();
+		$(".population").css('display','none');
+		countiesLayer.removeAll();
 		view.graphics.remove(graphicBuffer);
 		view.graphics.removeAll();
     	});
@@ -53,21 +63,16 @@ require([
 	circle = new Circle();
 	circle.spatialReference = map.spatialReference;
 
-    	geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+    geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
       
 	showBuffer = function (geometries) {
-		getCounties();
-	
 		view.graphics.remove(graphicBuffer);
 		graphicBuffer = new Graphic(geometries[0],bufferSymbol);
 		view.graphics.add(graphicBuffer);
-	
-		view.graphics.remove(carGraphic);
-		carGraphic = new Graphic(car, carSymbol);
-		view.graphics.add(carGraphic);
 		
 		circle = geometries[0];
-     	}
+		getCounties();
+    }
   
     getCounties = function() {
         var query = counties.createQuery();
@@ -80,7 +85,7 @@ require([
           var areas = [];
           var feat = featureSet.features;
           var circleArea;
-          var countiesGeometry = [];
+		  var countiesGeometry = [];	
           countiesLayer.removeAll();
           for (var i = 0; i < feat.length; i++) {
             countiesGeometry.push(feat[i].geometry);
@@ -105,30 +110,40 @@ require([
             });
             geometryService.areasAndLengths(areasAndLengthParams).then(function(results) {
               areas=results.areas;
-              var populationValue = calculatePopulation(feat,circleArea,areas);
-              view.popup.close();
-                view.popup.open({
-                  location: car,
-                  title: "VALOR DE POBLACIÓN PONDERADO",
-                  alignment: "top-center",
-                  content: "<b>Total de población en el buffer:</b> " + populationValue.toLocaleString() + " habitantes"
-                });
+			  var populationValue = calculatePopulation(feat,circleArea,areas);
+			  $(".population h6").remove();
+			  $(".population").append("<h6>Total de población: "+populationValue.toLocaleString()+" habitantes");
             });
           });
         });
-      }
+    }
 
-      calculatePopulation = function(features,circleArea,areas) {
-	var popTotal = 0;
-	for (var x = 0; x < features.length; x++) {
-		mult = areas[x] * 100;
-		percentage = mult / circleArea;
-		fraction = areas[x] / circleArea;
-		popCounty = features[x].attributes["TOTPOP_CY"] * fraction;
-		popTotal = popTotal + popCounty;
+    calculatePopulation = function(features,circleArea,areas) {
+		var popTotal = 0;
+		for (var x = 0; x < features.length; x++) {
+			mult = areas[x] * 100;
+			percentage = mult / circleArea;
+			fraction = areas[x] / circleArea;
+			popCounty = features[x].attributes["TOTPOP_CY"] * fraction;
+			popTotal = popTotal + popCounty;
+		}
+		popTotal = Math.trunc(popTotal);
+		return popTotal;
 	}
-	popTotal = Math.trunc(popTotal);
-	return popTotal;
+
+	checkState = function(indexPath, index) {
+		var query = counties.createQuery();
+        query.geometry = car;
+        query.returnGeometry = true;
+		query.outfields = ["*"];
+		counties.queryFeatures(query).then(function(featureSet) {
+			if (actualState === '') actualState = featureSet.features[0].attributes.ST_ABBREV;
+			if(actualState != featureSet.features[0].attributes.ST_ABBREV) {
+				actualState = featureSet.features[0].attributes.ST_ABBREV;
+				var stateGraphic = new Graphic(car, changeState);
+				view.graphics.add(stateGraphic);
+			}			
+		});
 	}
 
 	$('#pause').on('click', function() {
@@ -143,77 +158,81 @@ require([
 		pause = true;
 		canceled = true;
 	});
-/*
-		play = function() {
-			pause = false;
-			document.getElementById("pause").disabled = false;
-			document.getElementById("play").disabled = true;
-			updateCarSymbol();
-		}
 
-		increaseSpeed = function() {
-			if (speed < maxSpeed) {
-				++speed;
-				console.log('subo speed: ',speed);
-				document.getElementById("speed-minus").disabled = false;
-				updateCarSymbol();
+	$('#moreSpeed').on('click', function() {
+		if (speed < 50) {
+			speed += 10;
+		}
+		if (speed === 10) {
+			carSymbol = slowCarSymbol
+		} else if (speed === 30) {
+			carSymbol = regularCarSymbol
+		} else {
+			if (speed === 50) {
+				carSymbol = fastCarSymbol;
 			}
 		}
+		$('.speedControl p').remove();
+		$('#moreSpeed').after('<p>'+speed+'</p>');
+	});
 
-		decreaseSpeed = function() {
-			if (speed > minSpeed){
-				--speed;
-				console.log('bajo speed: ',speed);
-				document.getElementById("speed-plus").disabled = false;
-				updateCarSymbol();
+	$('#lessSpeed').on('click', function() {
+		if (speed > 10) {
+			speed -= 10;
+		}
+		if (speed === 10) {
+			carSymbol = slowCarSymbol
+		} else if (speed === 30) {
+			carSymbol = regularCarSymbol
+		} else {
+			if (speed === 50) {
+				carSymbol = fastCarSymbol;
 			}
 		}
+		$('.speedControl p').remove();
+		$('#moreSpeed').after('<p>'+speed+'</p>');
+	});
 
-		cancelSimulation = function() {
-			canceled = true;
-			document.getElementById("simulation").hidden = true;
+	$('#moreRadio').on('click', function() {
+		if (bufferDistance < 50) {
+			bufferDistance += 10;
 		}
+		$('.radioControl p').remove();
+		$('#moreRadio').after('<p>'+bufferDistance+'</p>');
+	});
 
-		updateCarSymbol = function() {
-			if (pause) {
-				console.log('paso a stopped');
-				carSymbol = stoppedCarSymbol;
-			} else{
-				green = minSpeed + 2;
-				console.log('green ',green);
-				red = maxSpeed - 3;
-				console.log('red ',red);
-				if (speed == maxSpeed) {
-					console.log('paso a max');
-					document.getElementById("speed-plus").disabled = true;
-					carSymbol = fastestCarSymbol;
-				} else if (speed == minSpeed) {
-					console.log('paso a min');
-					document.getElementById("speed-minus").disabled = true;
-					carSymbol = slowestCarSymbol;
-				} else if (speed <= green) {
-					console.log('paso a slow');
-					carSymbol = slowCarSymbol;
-				} else if (speed >= red) {
-					console.log('paso a fast');
-					carSymbol = fastCarSymbol;
-				} else{
-					console.log('paso a regular');
-					carSymbol = regularCarSymbol;
-				}
-			}
+	$('#lessRadio').on('click', function() {
+		if (bufferDistance > 10) {
+			bufferDistance -= 10;
 		}
+		$('.radioControl p').remove();
+		$('#moreRadio').after('<p>'+bufferDistance+'</p>');
+	});
 
-		modifyBuffer = function() {
-	        bufferDistance = bufferValue.value;
-        }*/
-                
-        $('#stop').on('click', function() {
-             $('.options-box').css('display','flex');
-		});
 		
-		sleep = function(ms) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		}
+	sleep = function(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
 	}
-) 
+
+	addSpeedLine = function(indexPath, index) {
+		var pointLine = currentRoute.geometry.paths[indexPath].slice(index, index + speed + 1);
+		var polyline = {
+			type: "polyline",
+			paths: pointLine
+		};
+		var polylineGraphic = new Graphic({
+			geometry: polyline
+		});
+		if (speed < 30) {
+			polylineGraphic.symbol = slowRouteSymbol;
+		}
+		if (speed === 30) {
+			polylineGraphic.symbol = regularRouteSymbol;
+		}
+		if (speed > 30) {
+			polylineGraphic.symbol = fastRouteSymbol;
+		}
+		
+		view.graphics.add(polylineGraphic);
+	}
+}) 
