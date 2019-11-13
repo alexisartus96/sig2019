@@ -126,11 +126,11 @@ require([
         var index = 1;
         if (pointArray != null && pointArray.length > 0) {
           pointArray.map(function(actualPoint){
-            var newPoint = new Graphic();
-            newPoint.geometry = actualPoint.geometry;
-            newPoint.attributes = {
-              "description" : 'sig2019-gr05' + pointName+index
+            var attributes = {
+              "event_type": '333',
+              "description" : pointName+'-'+index
             };
+            var newPoint = new Graphic(actualPoint.geometry, null, attributes);
             points.applyEdits({
               addFeatures: [newPoint]
             }).then(function (res) {
@@ -145,17 +145,17 @@ require([
         var query = points.createQuery();
         query.outFields = [ "objectid" ];
         $('.saved-routes').css('display','flex');
-        query.where = "description LIKE 'sig2019-gr05%'";
+        query.where = "event_type = '333'";
         points.queryFeatures(query).then(function(objectIds) {
           for (index = 0; index < objectIds.features.length; index++) {
             (function() {
               var point = objectIds.features[index].attributes.objectid;
-              var queryId = points.createQuery();
-              queryId.objectIds = objectIds.features[index].attributes.objectId;
+              var queryId = points.createQuery(); 
+              queryId.where = "objectid = " + point;
               points.queryFeatures(queryId).then(function(actualPoint) {
                 let pointName = actualPoint.features[0].attributes.description;
                 let id = actualPoint.features[0].attributes.objectid;
-                $('.saved-routes').append('<a id="'+id+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
+                $('.saved-routes').append('<a id="'+point+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
               })
             })();
           }
