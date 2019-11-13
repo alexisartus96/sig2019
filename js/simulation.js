@@ -10,7 +10,7 @@ require([
 	   
 
 	$('#start').on('click',  simulate = async function() {
-		$('#start').unbind('click');
+		$('#start').addClass('not-active');
 		$(".population").css('display','flex');
 		pause = false;
 		canceled = false;
@@ -153,9 +153,17 @@ require([
 		$('.options-box').css('display','flex');
 		$('.simulation-hide').css('display','none');
 		$(".population").css('display','none');
+		$('#start').removeClass('not-active');
+		$('#save-route').addClass('not-active');
+		$('#generate-route').addClass('not-active');
+		$('#save-point').addClass('not-active');
+		$('#simulate').addClass('not-active');
 		countiesLayer.removeAll();
 		view.graphics.remove(graphicBuffer);
 		view.graphics.removeAll();
+		disableTap = false;
+		$('.speedControl p').remove();
+		$('.radioControl p').remove();
 	});
 
 	$('#moreSpeed').on('click', function() {

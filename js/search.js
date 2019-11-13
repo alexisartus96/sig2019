@@ -23,7 +23,9 @@ require([
       search.popupTemplate = searchPopup;
 
       search.on("select-result", function(event) {
-        resultName = event.result.name;
-        mapPoint = event.result.feature.geometry;
+        if (!disableTap) {
+          resultName = event.result.name;
+          mapPoint = event.result.feature.geometry;
+        }
       })
 })

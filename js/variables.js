@@ -22,6 +22,8 @@ var actualState = ''
 
 var graphicBuffer, carGraphic, bufferParams;
 
+var mapTap, disableTap;
+
 require([
     "esri/Map",
     "esri/views/MapView",
