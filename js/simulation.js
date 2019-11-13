@@ -161,6 +161,9 @@ require([
 		countiesLayer.removeAll();
 		view.graphics.remove(graphicBuffer);
 		view.graphics.removeAll();
+		disableTap = false;
+		$('.speedControl p').remove();
+		$('.radioControl p').remove();
 	});
 
 	$('#moreSpeed').on('click', function() {

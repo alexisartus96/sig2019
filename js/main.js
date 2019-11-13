@@ -65,17 +65,24 @@ require([
           $('#save-point').addClass('not-active');
           $('.map-points').css('display','none');
         }
+        if (pointIndex === 1) {
+          $('#generate-route').addClass('not-active');
+        }
       }
 
-      view.on("click", function(event) {
-        event.stopPropagation();
-        mapPoint = event.mapPoint;
-        view.popup.open({
-          title: "Posición seleccionada",
-          location: mapPoint,
-          content: "<div class='searchPopup'><h4>Añadir punto</h4><button type='button' value='Agregar parada' class='w3-button w3-green' onclick='addStop(mapPoint); view.popup.close()'>+</button></div>"
-        });
-      });
+      mapTap = function(event) {
+        if (!disableTap) {
+          event.stopPropagation();
+          mapPoint = event.mapPoint;
+          view.popup.open({
+            title: "Posición seleccionada",
+            location: mapPoint,
+            content: "<div class='searchPopup'><h4>Añadir punto</h4><button type='button' value='Agregar parada' class='w3-button w3-green' onclick='addStop(mapPoint); view.popup.close()'>+</button></div>"
+          });
+        }
+      }
+      
+      view.on("click", mapTap);
 
       $('#save-route').on('click', function() {
           var routeName = prompt("Ingrese el nombre de la ruta");
@@ -119,12 +126,10 @@ require([
         var index = 1;
         if (pointArray != null && pointArray.length > 0) {
           pointArray.map(function(actualPoint){
-            var newPoint = new Graphic({
-              geometry: new Point(actualPoint),
-              symbol: pointSymbol,
-            });
+            var newPoint = new Graphic();
+            newPoint.geometry = actualPoint.geometry;
             newPoint.attributes = {
-              "Id" : 'sig2019-gr05' + pointName+index
+              "description" : 'sig2019-gr05' + pointName+index
             };
             points.applyEdits({
               addFeatures: [newPoint]
@@ -140,14 +145,15 @@ require([
         var query = points.createQuery();
         query.outFields = [ "objectid" ];
         $('.saved-routes').css('display','flex');
+        query.where = "description LIKE 'sig2019-gr05%'";
         points.queryFeatures(query).then(function(objectIds) {
           for (index = 0; index < objectIds.features.length; index++) {
             (function() {
               var point = objectIds.features[index].attributes.objectid;
               var queryId = points.createQuery();
-              queryId.objectIds = objectIds.features[index];
+              queryId.objectIds = objectIds.features[index].attributes.objectId;
               points.queryFeatures(queryId).then(function(actualPoint) {
-                let pointName = actualPoint.features[0].attributes.notes;
+                let pointName = actualPoint.features[0].attributes.description;
                 let id = actualPoint.features[0].attributes.objectid;
                 $('.saved-routes').append('<a id="'+id+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
               })
@@ -165,6 +171,7 @@ require([
           shownRoute.symbol = routeSymbol;
           currentRoute = shownRoute;
           view.graphics.add(shownRoute);
+          view.center = shownRoute.geometry.paths[0][0];  
         });
         $('#simulate').removeClass('not-active');
       };
@@ -187,6 +194,7 @@ require([
         $('.simulation-hide').css('display','flex'); 
         $('#lessSpeed').after('<p>'+initialSpeed+'</p>');
         $('#lessRadio').after('<p>'+bufferDistance+'</p>');
+        disableTap = true;
       });
 
       cleanMap = function() {
@@ -200,10 +208,22 @@ require([
         $('#simulate').addClass('not-active');
         $('.map-points').css('display', 'none');
         $('.map-points a').remove();
+	    	$('.speedControl p').remove();
+		    $('.radioControl p').remove();
+        pause = true;
+	    	canceled = true;
+        pointIndex = 0;
+        pointArray = [];
         countiesLayer.removeAll();
         view.graphics.remove(graphicBuffer);
         view.graphics.removeAll();
+        disableTap = false;
       }
 
       $('#clean-map').on('click', cleanMap);
+
+      closeSavedRoutes = function() {
+        $('.saved-routes').css('display','none');
+        $('.saved-routes a').remove();
+      }
 });

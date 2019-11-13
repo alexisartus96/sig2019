@@ -134,6 +134,7 @@ i {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-right: 50px;
 }
 
 .radioControl {
@@ -148,4 +149,9 @@ i {
     text-decoration: none;
     color: black;
     background-color: rgb(33, 85, 35) !important;
-  }
+}
+
+.saved-routes h4 i{
+    margin-left: 80px;
+
+}
