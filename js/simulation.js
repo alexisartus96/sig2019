@@ -51,13 +51,6 @@ require([
 				await sleep(sleepTime);
 			}
 		}
-		$('.options-box').css('display','flex');
-		$('.simulation-hide').css('display','none');
-		await sleep(sleepTime);
-		$(".population").css('display','none');
-		countiesLayer.removeAll();
-		view.graphics.remove(graphicBuffer);
-		view.graphics.removeAll();
     	});
  
 	circle = new Circle();
@@ -157,6 +150,12 @@ require([
 	$('#stop').on('click', function() {
 		pause = true;
 		canceled = true;
+		$('.options-box').css('display','flex');
+		$('.simulation-hide').css('display','none');
+		$(".population").css('display','none');
+		countiesLayer.removeAll();
+		view.graphics.remove(graphicBuffer);
+		view.graphics.removeAll();
 	});
 
 	$('#moreSpeed').on('click', function() {
@@ -173,7 +172,7 @@ require([
 			}
 		}
 		$('.speedControl p').remove();
-		$('#moreSpeed').after('<p>'+speed+'</p>');
+		$('#lessSpeed').after('<p>'+speed+'</p>');
 	});
 
 	$('#lessSpeed').on('click', function() {
@@ -190,7 +189,7 @@ require([
 			}
 		}
 		$('.speedControl p').remove();
-		$('#moreSpeed').after('<p>'+speed+'</p>');
+		$('#lessSpeed').after('<p>'+speed+'</p>');
 	});
 
 	$('#moreRadio').on('click', function() {
@@ -198,7 +197,7 @@ require([
 			bufferDistance += 10;
 		}
 		$('.radioControl p').remove();
-		$('#moreRadio').after('<p>'+bufferDistance+'</p>');
+		$('#lessRadio').after('<p>'+bufferDistance+'</p>');
 	});
 
 	$('#lessRadio').on('click', function() {
@@ -206,7 +205,7 @@ require([
 			bufferDistance -= 10;
 		}
 		$('.radioControl p').remove();
-		$('#moreRadio').after('<p>'+bufferDistance+'</p>');
+		$('#lessRadio').after('<p>'+bufferDistance+'</p>');
 	});
 
 		

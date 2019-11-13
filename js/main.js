@@ -152,6 +152,8 @@ require([
           shownRoute.symbol = routeSymbol;
           currentRoute = shownRoute;
           view.graphics.add(shownRoute);
+          var centerPoint = new Point(shownRoute.geometry.paths[0][0][0], shownRoute.geometry.paths[0][0][1]);
+          view.centerAndZoom(centerPoint);
         });
       };
 
@@ -171,7 +173,7 @@ require([
         $('.saved-routes a').remove();
         $('.map-points').css('display', 'none');
         $('.simulation-hide').css('display','flex'); 
-        $('#moreSpeed').after('<p>'+initialSpeed+'</p>');
-        $('#moreRadio').after('<p>'+bufferDistance+'</p>');
+        $('#lessSpeed').after('<p>'+initialSpeed+'</p>');
+        $('#lessRadio').after('<p>'+bufferDistance+'</p>');
       });
 });
