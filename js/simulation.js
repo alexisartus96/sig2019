@@ -36,8 +36,6 @@ require([
 				carGraphic = new Graphic(car, carSymbol);
 				view.graphics.add(carGraphic);
 
-				await sleep(sleepTime);
-
 				addSpeedLine(indexPath, index);
 
 				index = index + speed;
@@ -47,6 +45,7 @@ require([
 					if (indexPath >= currentRoute.geometry.paths.length)
 						endRoute = true;
 				}
+				await sleep(sleepTime);
 			} else {
 				await sleep(sleepTime);
 			}
@@ -77,7 +76,7 @@ require([
           var inBuffer = [];
           var areas = [];
           var feat = featureSet.features;
-          var circleArea;
+          var countiesAreas;
 		  var countiesGeometry = [];	
           countiesLayer.removeAll();
           for (var i = 0; i < feat.length; i++) {
@@ -87,13 +86,13 @@ require([
             graphicCounties = new Graphic(feat[i].geometry,countySymbol);
             countiesLayer.add(graphicCounties);					
           }
-          var areasAndLengthParamsCircle = new AreasAndLengthsParameters({
+          var areasAndLengthParamsCounties = new AreasAndLengthsParameters({
             areaUnit: "square-kilometers",
             lengthUnit: "kilometers",
-            polygons: [circle]
+            polygons: countiesGeometry
           });
-          geometryService.areasAndLengths(areasAndLengthParamsCircle).then(function(results) {
-            circleArea = results.areas[0];
+          geometryService.areasAndLengths(areasAndLengthParamsCounties).then(function(results) {
+            countiesAreas = results.areas;
           });
           geometryService.intersect(countiesGeometry,circle).then(function(intersectionGeometry) {
             var areasAndLengthParams = new AreasAndLengthsParameters({
@@ -103,7 +102,7 @@ require([
             });
             geometryService.areasAndLengths(areasAndLengthParams).then(function(results) {
               areas=results.areas;
-			  var populationValue = calculatePopulation(feat,circleArea,areas);
+			  var populationValue = calculatePopulation(feat,countiesAreas,areas);
 			  $(".population h6").remove();
 			  $(".population").append("<h6>Total de población: "+populationValue.toLocaleString()+" habitantes");
             });
@@ -111,13 +110,11 @@ require([
         });
     }
 
-    calculatePopulation = function(features,circleArea,areas) {
+    calculatePopulation = function(features,countieAreas,areas) {
 		var popTotal = 0;
+		var porcent
 		for (var x = 0; x < features.length; x++) {
-			mult = areas[x] * 100;
-			percentage = mult / circleArea;
-			fraction = areas[x] / circleArea;
-			popCounty = features[x].attributes["TOTPOP_CY"] * fraction;
+			popCounty = (areas[x] * features[x].attributes["TOTPOP_CY"]) / countieAreas[x];
 			popTotal = popTotal + popCounty;
 		}
 		popTotal = Math.trunc(popTotal);
