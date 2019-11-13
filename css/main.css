@@ -73,6 +73,21 @@ i {
     cursor: pointer;
 }
 
+.saved-points {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+}
+
+.saved-points a {
+    width: 80%;
+    margin: 7px;
+    background: #50c7ff52;
+    cursor: pointer;
+}
+
 .simulation-hide {
     display: none;
 }
@@ -153,5 +168,8 @@ i {
 
 .saved-routes h4 i{
     margin-left: 80px;
+}
 
+.saved-points h4 i{
+    margin-left: 80px;
 }

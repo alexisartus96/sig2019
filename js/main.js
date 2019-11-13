@@ -11,9 +11,13 @@ require([
       addStop = function(mapPoint) {
         const stopPoint = new Graphic(mapPoint, pointSymbol);
         view.graphics.add(stopPoint);
+        addPoint(stopPoint,mapPoint.latitude,mapPoint.longitude);
+      }
+
+      addPoint = function(stopPoint,latitude,longitude) {
         $('.map-points').css('display','flex');
         pointArray[pointIndex] = stopPoint;
-        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+pointIndex +'- '+mapPoint.latitude+' , '+mapPoint.longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+pointIndex+')" class="fas fa-times"></i></div></a>');
+        $('.map-points').append('<a id="'+pointIndex+'"><i class="fas fa-map-marker-alt"></i>'+pointIndex +'- '+latitude+' , '+longitude+' '+'<div class="control-arrows"><i onclick="moveUp('+pointIndex+')" class="pointer fas fa-arrow-up"></i><i onclick="moveDown('+pointIndex+')" class="pointer fas fa-arrow-down"></i><i onclick="deletePoint('+pointIndex+')" class="fas fa-times"></i></div></a>');
         pointIndex++;
         if (pointIndex >= 2) {
           $('#generate-route').removeClass('not-active');
@@ -144,7 +148,7 @@ require([
     $('#get-saved-point').on('click', function() {
         var query = points.createQuery();
         query.outFields = [ "objectid" ];
-        $('.saved-routes').css('display','flex');
+        $('.saved-points').css('display','flex');
         query.where = "event_type = '333'";
         points.queryFeatures(query).then(function(objectIds) {
           for (index = 0; index < objectIds.features.length; index++) {
@@ -154,7 +158,7 @@ require([
               queryId.where = "objectid = " + point;
               points.queryFeatures(queryId).then(function(actualPoint) {
                 let pointName = actualPoint.features[0].attributes.description;
-                $('.saved-routes').append('<a id="'+point+'" onclick="showPoint(id)"><i class="fas fa-road"></i>'+pointName+'</a>')
+                $('.saved-points').append('<a id="'+point+'" onclick="showPoint(id)"><i class="fas fa-map-marker-alt"></i>'+pointName+'</a>')
               })
             })();
           }
@@ -182,6 +186,7 @@ require([
           var shownPoint = actualPoint.features[0];
           shownPoint.symbol = pointSymbol;
           view.graphics.add(shownPoint);
+          addPoint(shownPoint,shownPoint.geometry.latitude,shownPoint.geometry.longitude);
         });
       };
 
@@ -189,6 +194,8 @@ require([
         $('.options-box').css('display','none');
         $('.saved-routes').css('display','none');
         $('.saved-routes a').remove();
+        $('.saved-points').css('display','none');
+        $('.saved-points a').remove();
         $('.map-points').css('display', 'none');
         $('.simulation-hide').css('display','flex'); 
         $('#lessSpeed').after('<p>'+initialSpeed+'</p>');
@@ -224,5 +231,10 @@ require([
       closeSavedRoutes = function() {
         $('.saved-routes').css('display','none');
         $('.saved-routes a').remove();
+      }
+
+      closeSavedPoints = function() {
+        $('.saved-points').css('display','none');
+        $('.saved-points a').remove();
       }
 });
