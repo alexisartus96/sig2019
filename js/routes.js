@@ -2,10 +2,11 @@ require([
     "esri/Graphic",
     "esri/tasks/RouteTask",
     "esri/tasks/support/FeatureSet",
-	  "esri/tasks/support/RouteParameters"
+    "esri/tasks/support/RouteParameters",
+    "esri/geometry/support/webMercatorUtils"
 	], 
 
-	function(Graphic, RouteTask, FeatureSet, RouteParameters) {
+	function(Graphic, RouteTask, FeatureSet, RouteParameters, webMercatorUtils) {
 
 		routeTask = new RouteTask("https://utility.arcgis.com/usrsvcs/appservices/Hr0YwNsk3KRTTywS/rest/services/World/Route/NAServer/Route_World/solve");
 
@@ -14,9 +15,19 @@ require([
             // Setup the route parameters
             view.graphics.remove(currentRoute);
 
+            var features = [];
+
+            pointArray.forEach(element => {
+              g = element.geometry;
+              if(!element.geometry.spatialReference.isWGS84){
+                g = webMercatorUtils.webMercatorToGeographic(element.geometry);
+              }
+              features.push({"geometry": g})
+            });
+
             var routeParams = new RouteParameters({
               stops: new FeatureSet({
-                features: pointArray // Pass the array of graphics
+                features: features // Pass the array of graphics
               }),
               returnDirections: true
             });
