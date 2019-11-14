@@ -219,7 +219,7 @@ require([
 	}
 
 	addSpeedLine = function(indexPath, index) {
-		var pointLine = currentRoute.geometry.paths[indexPath].slice(index, index + speed + 1);
+		var pointLine = currentRoute.geometry.paths[indexPath].slice(index - speed, index);
 		var polyline = {
 			type: "polyline",
 			paths: pointLine
