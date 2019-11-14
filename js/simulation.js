@@ -161,6 +161,10 @@ require([
 		disableTap = false;
 		$('.speedControl p').remove();
 		$('.radioControl p').remove();
+		$('.map-points').css('display', 'none');
+        $('.map-points a').remove();
+		pointIndex = 0;
+        pointArray = [];
 	});
 
 	$('#moreSpeed').on('click', function() {
