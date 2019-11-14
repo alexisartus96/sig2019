@@ -35,9 +35,9 @@ require([
 
 				carGraphic = new Graphic(car, carSymbol);
 				view.graphics.add(carGraphic);
-
+				
+				await sleep(sleepTime);
 				addSpeedLine(indexPath, index);
-
 				index = index + speed;
 				if(index >= currentRoute.geometry.paths[indexPath].length) {
 					indexPath++;
@@ -45,7 +45,6 @@ require([
 					if (indexPath >= currentRoute.geometry.paths.length)
 						endRoute = true;
 				}
-				await sleep(sleepTime);
 			} else {
 				await sleep(sleepTime);
 			}
@@ -223,7 +222,7 @@ require([
 	}
 
 	addSpeedLine = function(indexPath, index) {
-		var pointLine = currentRoute.geometry.paths[indexPath].slice(index - speed, index);
+		var pointLine = currentRoute.geometry.paths[indexPath].slice(index, index + speed + 1);
 		var polyline = {
 			type: "polyline",
 			paths: pointLine
